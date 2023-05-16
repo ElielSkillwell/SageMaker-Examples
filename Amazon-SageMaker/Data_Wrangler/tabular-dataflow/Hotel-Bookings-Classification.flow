@@ -4,6 +4,7 @@
     "disable_limits": false,
     "instance_type": "ml.m5.4xlarge"
   },
+  "parameters": [],
   "nodes": [
     {
       "node_id": "1f7fb244-77d9-4d90-9dba-8d9956ba5f79",
@@ -242218,6 +242219,93 @@
         {
           "name": "default",
           "node_id": "db7ff0f7-6ef8-4d7e-a676-359fe6574514",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "fdd69795-1e2f-45a7-be11-6129975ca743",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "hotel_bookings_2.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://test-sagemaker-examples-1357942113492/hotel_bookings 2.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false,
+            "s3RoleArn": null
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "11701516-b66d-407e-99ed-12da46cbf392",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "hotel": "string",
+          "is_canceled": "long",
+          "lead_time": "long",
+          "arrival_date_year": "long",
+          "arrival_date_month": "string",
+          "arrival_date_week_number": "long",
+          "arrival_date_day_of_month": "long",
+          "stays_in_weekend_nights": "long",
+          "stays_in_week_nights": "long",
+          "adults": "long",
+          "children": "long",
+          "babies": "long",
+          "meal": "string",
+          "country": "string",
+          "market_segment": "string",
+          "distribution_channel": "string",
+          "is_repeated_guest": "long",
+          "previous_cancellations": "long",
+          "previous_bookings_not_canceled": "long",
+          "reserved_room_type": "string",
+          "assigned_room_type": "string",
+          "booking_changes": "long",
+          "deposit_type": "string",
+          "agent": "long",
+          "company": "string",
+          "days_in_waiting_list": "long",
+          "customer_type": "string",
+          "adr": "float",
+          "required_car_parking_spaces": "long",
+          "total_of_special_requests": "long",
+          "reservation_status": "string",
+          "reservation_status_date": "date"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "fdd69795-1e2f-45a7-be11-6129975ca743",
           "output_name": "default"
         }
       ],
