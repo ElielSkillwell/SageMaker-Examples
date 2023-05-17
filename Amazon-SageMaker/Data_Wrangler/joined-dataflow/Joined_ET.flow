@@ -1,0 +1,525 @@
+{
+  "metadata": {
+    "version": 1,
+    "disable_limits": false,
+    "instance_type": "ml.m5.4xlarge"
+  },
+  "parameters": [],
+  "nodes": [
+    {
+      "node_id": "155e4deb-40cb-4582-9596-382d77586d35",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "tracks.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-eu-west-1-790592228004/music-recommendation-demo/input/tracks.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false,
+            "s3RoleArn": null
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "491f30d6-ecd0-4cc4-a36a-0421e094ba1d",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "trackId": "string",
+          "length": "float",
+          "energy": "float",
+          "acousticness": "float",
+          "valence": "float",
+          "speechiness": "float",
+          "instrumentalness": "float",
+          "liveness": "float",
+          "tempo": "float",
+          "genre": "string"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "155e4deb-40cb-4582-9596-382d77586d35",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "27d0b5c8-59e7-4b6c-997a-60767382b935",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "ratings.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-eu-west-1-790592228004/music-recommendation-demo/input/ratings.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false,
+            "s3RoleArn": null
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "6bba54d6-8e6c-43bc-af8e-5362ae8c6ddd",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "ratingEventId": "string",
+          "ts": "long",
+          "userId": "long",
+          "trackId": "string",
+          "sessionId": "long",
+          "itemInSession": "long",
+          "Rating": "float"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "27d0b5c8-59e7-4b6c-997a-60767382b935",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "8453cd94-513d-47a8-bd26-98987b2fb45d",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.encode_categorical_0.1",
+      "parameters": {
+        "operator": "One-hot encode",
+        "one_hot_encode_parameters": {
+          "input_column": [
+            "genre"
+          ],
+          "invalid_handling_strategy": "Keep",
+          "drop_last": false,
+          "output_style": "Columns"
+        },
+        "ordinal_encode_parameters": {
+          "invalid_handling_strategy": "Replace with NaN"
+        }
+      },
+      "trained_parameters": {
+        "one_hot_encode_parameters": {
+          "_hash": "4623886b68927a4dcb437c2769f9d5234824476a",
+          "string_indexer_model": "P)h>@6aWAK2mq>MuvRn?TL#?#003hF000vJ003=ebYWy+bYU-WVRCdWFfcGMFm;a0YQr!PMfd%TSv$h7#v$8ulSN3NrCT#dW5-0Vj-=8w_}{C#P$)FpJNKMBH;@`bfGs#41$vZc62T*1gwbLkjEPA+N1p7sw~9W94^EMW0^(#SL^K|@)q2y`ZCS0WvTO@j_*ddEIh)Oms719x^J!OQ=F+5c_($0{Rrfg5o$S=6$(78bIbb&5z@_L@+&P`0NXGZleXpO<DouO)j(YK3h<uJG`&%B#GQnJcq5+eRr#sU7pY;7t@1HqhcAWFDz(-cZFIP|bGBCX*vhw;wLBc#gd;w5P0|XQR000O8s$;NL^~9jU4gdfE3;+NC7ytkOZDn*}WMOn+FD`Ila&#>)FfcGME@N_IOD;-gU|?WkV2c(s0RT`-0|XQR000O8t7EWM;P7sE1Ofm6{sI61NB{r;WMOn+FK}UUbS*G2FfcGJHe)t8Wn?fiEnzodVJ$RbWH&8hGB`LbH8W;2WHB-~Vl^-`En_e+FfMa$VQ_GHE^uLTadl;Mjgn1^(?A%<C)1a$YlRA#kU+o^=&}oSFzq&WOE0_P3rmqwJP0DobTX}>(@8g(DBY#^J&8BJg6KE!;MJ=qPks_lK7CnTQNc^*ng8?u=gDs-{lkGz5cy`1uLk+};qCVuE-^tUk|ILtO93HNc=vuAVJOT(4xR&bl!xV*ot<sLdN0nDPUa;j`|<2#5c7#~tMVY0lcGT@VmxNTcvv}-nMjRmW{>Ge<qWsWX4{asF9p|0tRn8*#ExB9*&I6uGYEDpgdEo@kqZnJ0zp11r!$sJPE!6tOc}wbh3)H-4TVe(lZ4F)CdFPC%&okgmr<(MmMtO0R4DzoHYwMB8EUBKLfgWQ>$p25mz14a5jjt<&R7L61HWwuwoL0awl45asT-i(CB}vcK;Te;0bc$I6U%yo2}MgYcp+c{YTdTuWK7wN0Ucd|(w8DhqgdI6CT&n3*?WID(o;#HIL(BnN&JdVg=Qhs%>HbgdwM<-UdKyyl5y?Ty-_4&n0lRO=bmEIW$OwU^w<8MIku5Ed{6$PyPOrNF~~etnnfyooJr|*;0wg!AEJT{8%nVj>fR*+%vvm-FOYq_0lYm;s+$w3`qXdGMs;_XMKY|0%@!9ef7A+C!w-VtodZAE=e&Io-sOIqi{^e1@^*8y=eWxY?!i6u;m`j8P)h>@6aWAK2mq^NuvQBwK#mds000mG002z@003lRbYU+paA9(EEif=JFfc7PV>UQtWH2%<VK-r6Ei__eH!Wf^I5;geGiEbnF)}w|H83+RV=yo<E^}^SaBz7paA9(Bb!BueV{&6lE=p!#U|?d1IAtOEDP1-n08mQ-0u%!j000080IFlKRx}Y?2HgMv0Am3F022TJ00000000000HlEc0001OWprU=VRT_HaA9(EEif=JFfdR{0Rj{Q6aWAK2mq>MuvYcNpu!FS000aC000;O0000000000005+c4gmlFZDn*}WMOn+FD`Ila&#>)FfcGME@N_IP)h*<6ay3h000O8t7EWM;P7sE1Ofm6{sI61NB{r;0000000000q=8Za003lRbYU-WVRCdWFfcGMFfBG?HaKNuFfuJ+H(_BdG-6~oEn+e_I4w0ZW;0|lGB;v1Ff%P<FfcGKb8ca9aCt6pVRCVGWpq$W0Rj{Q6aWAK2mq^NuvQBwK#mds000mG002z@0000000000005+cyaNCLWMOn+FD`Ila&#>)FfcGMEjD8|IAvroGA&^@VPP#aVq`ZhVlp^5Ej2S{Gh{I`H)1s~Gc98<FfcB2Zeeh6c`k5aa&dKKbS`6ZV^B*41^@s600aO80C)ia067Ez0000",
+          "one_hot_encoder_model": "P)h>@6aWAK2mq^NuvT%+%%{`<003zL000vJ003=ebYWy+bYU-WVRCdWFfcGMFm;a0N&`U<MfZM2ttZVqgU(ij1Pr=z+mt;uX0TsWSGzFGzuQI>6tk(t<(_lv1jb@YFhbxLg%Qn>REo&2%2_oNN@h|Io_0a*ya^NWp&Sbp$l@pox(H*lz3$t-ZnkYV^c9@>C*rgOU(B6qRkK0&?l*Pe@-mh1mr~Qv4Z}^{JkO>pmBOPtU@@Oy;t=mK35+w^L=}WAG0SbR#iE5=)FxQ{X+EN#EbaXp+Vci62QK;Ie}L~ktQAZ&W47}6@0f7@vvv7nt-pE~Us%_x4^T@31QY-O00;o9W3X22D-h%k0000C0000O0001OWprU=VRT_HE^uLTbS*G2FfcGKV{&6lE=p!#U|?cce&%c;08mQ<1QY-O00;o9W3X1kqiZ3e0RR9@0ssI=0001FVRT_HaA9(EEif=JFfc7-VP!TrVPQBeGG;P4Ei^P_V=ZE2VmU22I5T8oI5;^qI5RgbV=yo<E^}^SaBz7paA9(Bb!BvAQcY_cF%*1OUDwbL2t+~)doY5S1YFUzvs=gHklsoOA-FxYlp<^8bg6dNk>nOP_}-t;AK7yb$)&Ger!<rWN%P)}-i+AuSJQ+76|_%pf89KbDM8es9e|w^0ss&2!<E2e+@c*4@%HA_Y?MR{LCm^z${Kw7`iWmC_vMq<pG~PKft2v4S_N}ayVcv`yYV=qb9#*Qw9VVL@BvAb>;ZpdtSL<ufRQMU;(izHM0*{G#`iDSi0;UgFv8B*wBJ2$Of@Tm{eKX8#9TN98$Vifm%XPFP(}J(Hr>Vcfb-g2NVQOCTW%7_ug3YJuK2@|9Lfav!G8>YX(b*mmnKM8f0LyNDpx`ApRFqqRtqC0!Uwn1K@7yaFgEvM^5IHUs{GTs7YZ4T;;&LUr&d_r27T95iwZ@?VO`f%P(|g>mez{NTv>0{15qJTGmBIlYzE@a6JESte_R89vvvHubiHlFULupB9QO8S%fjZpe3WXFCi65?!z9aQFOHJzQ0wtg{!%AnZAOP#uE(SKK@`XMw%09ybNr8f15ir?1QY-O00;o9W3X0;sSDu}0000G0000@0001FVRT_HE^uLTbS*G2FfcGJWMO4CIALKpEiz^@IW06aWMeI2WMVljIXE+9VmLTCH8?XjEn_e+FfMa$VQ_GHE^uLTadl;ME@N_IOD;-gU|?Wk$jzT0R=t~z2LMn@0Rj{Q6aWAK2mq^NuvT%+%%{`<003zL000vJ0000000000005+c00000ZDn*}WMOn+FK}UUbS*G2FfcGsO928D0~7!N00;o9W3X22D-h%k0000C0000O00000000000001_fdv5o0BvP-VPs)+VJ|LlVRCdWFfcGMFfL<qV^B*00u%!j000080IOrLR>PxfA))~Q089b^07w7;00000000000HlFQ0RRAGVRT_HaA9(EEif=JFfc7-VP!TrVPQBeGG;P4Ei^P_V=ZE2VmU22I5T8oI5;^qI5RgbV=yo<E^}^SaBz7paA9(Bb!Bu=O928D0~7!N00;o9W3X0;sSDu}0000G0000@00000000000001_fl&hh0AyiwVJ|LlVRCdWFfcGMFfC+ZWi~irVK^-^W->V~G&E#mEn;M1IW0LjGh|{oI5{;qGdC?`FfcGKb8ca9aCt6pVRCVGWpplMa$`_S1qJ{B000C41ORve007Pd00000"
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "491f30d6-ecd0-4cc4-a36a-0421e094ba1d",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "5c1f41a9-800d-43cb-a273-b4583fe910f1",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.custom_formula_0.1",
+      "parameters": {
+        "output_column": "danceability",
+        "formula": "0.3*valence + 0.1*liveness + 0.1*energy"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "8453cd94-513d-47a8-bd26-98987b2fb45d",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "c2f8f4a2-1de1-4575-a9c6-a3592cf2144f",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.join_tables_0.1",
+      "name": "jointrackid.csv",
+      "parameters": {
+        "left_column": "trackId",
+        "right_column": "trackId",
+        "join_type": "inner"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "5c1f41a9-800d-43cb-a273-b4583fe910f1",
+          "output_name": "default"
+        },
+        {
+          "name": "df",
+          "node_id": "6bba54d6-8e6c-43bc-af8e-5362ae8c6ddd",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "0db2c042-873f-44e2-a40d-80f826579a39",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.custom_code_0.1",
+      "parameters": {
+        "operator": "Python (PySpark)",
+        "pyspark_parameters": {
+          "code": "# Table is available as variable `df`\nimport pyspark.sql.functions as F\n# numeric features\nnum_feat_cols = ['energy', 'acousticness', 'valence', 'speechiness', 'instrumentalness', 'liveness', 'tempo', 'danceability', 'genre_Latin', 'genre_Folk',  'genre_Blues', 'genre_Rap', 'genre_Reggae', 'genre_Jazz', 'genre_RnB', 'genre_Country', 'genre_Electronic', 'genre_Pop_Rock']\n# calculate averages for 5-star ratings\nagg_obj = [F.avg(feat_col).alias(feat_col+\"_5star\") for feat_col in num_feat_cols]\ndf = df.filter(F.col('Rating')==5).groupBy('userId').agg(*agg_obj)"
+        },
+        "name": "Calculate_5_Star_Ratings"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "c2f8f4a2-1de1-4575-a9c6-a3592cf2144f",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "e33c2892-e33c-4eda-a7d4-30a92b350314",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Drop column",
+        "drop_column_parameters": {
+          "column_to_drop": [
+            "trackId_0",
+            "trackId_1",
+            "ts",
+            "sessionId",
+            "itemInSession",
+            "ratingEventId"
+          ]
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "c2f8f4a2-1de1-4575-a9c6-a3592cf2144f",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "db109a16-fbcb-471e-a029-ad3caed0d0cf",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.join_tables_0.1",
+      "name": "dataset",
+      "parameters": {
+        "left_column": "userId",
+        "right_column": "userId",
+        "join_type": "inner"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "0db2c042-873f-44e2-a40d-80f826579a39",
+          "output_name": "default"
+        },
+        {
+          "name": "df",
+          "node_id": "e33c2892-e33c-4eda-a7d4-30a92b350314",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "8aa8c712-e9d3-4798-a88d-0086530e7ed8",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Drop column",
+        "drop_column_parameters": {
+          "column_to_drop": [
+            "userId_0",
+            "userId_1"
+          ]
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "db109a16-fbcb-471e-a029-ad3caed0d0cf",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "0052af91-2dfe-428e-b3f0-12668efeae84",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.describe_0.1",
+      "parameters": {
+        "name": "Table_Summary"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "8aa8c712-e9d3-4798-a88d-0086530e7ed8",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "5f885423-e429-47e4-946d-1d7ba4dc52d8",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.describe_0.1",
+      "parameters": {
+        "name": "Untitled"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "491f30d6-ecd0-4cc4-a36a-0421e094ba1d",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "6246017c-11ef-43bc-b24d-6cf0c57f066f",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Move column",
+        "move_column_parameters": {
+          "move_type": "Move to start",
+          "move_to_start_parameters": {
+            "column_to_move": [
+              "Rating"
+            ]
+          }
+        },
+        "drop_column_parameters": {}
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "8aa8c712-e9d3-4798-a88d-0086530e7ed8",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "84230608-66d3-4b37-b38e-58692851f4f6",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.split_0.1",
+      "parameters": {
+        "operator": "Randomized split",
+        "randomized_split_parameters": {
+          "splits": [
+            {
+              "name": "Train",
+              "percentage": 0.8
+            },
+            {
+              "name": "Test",
+              "percentage": 0.2
+            }
+          ],
+          "error": 0.0001
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "6246017c-11ef-43bc-b24d-6cf0c57f066f",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Train"
+        },
+        {
+          "name": "Test"
+        }
+      ]
+    },
+    {
+      "node_id": "f59d5ee5-9736-4be3-9ef4-6dcccc5cbabe",
+      "type": "DATASET",
+      "operator": "sagemaker.dataset.identity_0.1",
+      "parameters": {},
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "84230608-66d3-4b37-b38e-58692851f4f6",
+          "output_name": "Train"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "913d66f2-28cf-4d05-afd3-8bdc32a18766",
+      "type": "DATASET",
+      "operator": "sagemaker.dataset.identity_0.1",
+      "parameters": {},
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "84230608-66d3-4b37-b38e-58692851f4f6",
+          "output_name": "Test"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "09720b45-40a2-4f45-9f54-20a022c85055",
+      "type": "DESTINATION",
+      "operator": "sagemaker.spark.s3_destination_0.1",
+      "name": "S3: Train",
+      "parameters": {
+        "output_config": {
+          "compression": "none",
+          "output_path": "s3://test-sagemaker-examples-1357942113492/DEMO_Joined/Train/",
+          "output_content_type": "CSV",
+          "delimiter": ","
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "f59d5ee5-9736-4be3-9ef4-6dcccc5cbabe",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "a6d96d9a-c1ed-43c1-9764-7121095256a7",
+      "type": "DESTINATION",
+      "operator": "sagemaker.spark.s3_destination_0.1",
+      "name": "S3: Test",
+      "parameters": {
+        "output_config": {
+          "compression": "none",
+          "output_path": "s3://test-sagemaker-examples-1357942113492/DEMO_Joined/Test/",
+          "output_content_type": "CSV",
+          "delimiter": ","
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "913d66f2-28cf-4d05-afd3-8bdc32a18766",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}
