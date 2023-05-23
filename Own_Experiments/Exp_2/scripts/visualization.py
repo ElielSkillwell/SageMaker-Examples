@@ -47,11 +47,17 @@ def _columnize(charts, cols=2):
 def visualize_tuning_job(tuning_jobs, return_dfs=False, job_metrics=None, trials_only=False, advanced=False):
     ''' tuning_job can contain a single tuning job or a list of tuning jobs. 
         Either represented by the name of the job as str or as HyperParameterTuner object.'''
+    
+    print('here?')
            
     trials_df, tuned_parameters, objective_name, is_minimize = get_job_analytics_data(tuning_jobs)
     display(trials_df.head(10))
+    
+    print(tuned_parameters)
 
     full_df = _prepare_consolidated_df(trials_df, objective_name) if not trials_only else pd.DataFrame()
+    
+    print(tuned_parameters)
     
     charts = create_charts(
         trials_df, 
@@ -167,6 +173,7 @@ def create_charts(trials_df,
 
     def render_detail_charts():
         for tuning_parameter in tuning_parameters: 
+            print(tuning_parameter)
 
             # Map dataframe's dtype to altair's types and
             # adjust scale if necessary
@@ -540,6 +547,7 @@ def get_job_analytics_data(tuning_job_names):
         tuning_job_result = sm.describe_hyper_parameter_tuning_job(HyperParameterTuningJobName=tuning_job_name)
         status = tuning_job_result['HyperParameterTuningJobStatus']
         print(f'Tuning job {tuning_job_name:25s} status: {status}')
+        print("Test")
         
         df = pd.concat([df, _get_df(tuning_job_name)])
 
