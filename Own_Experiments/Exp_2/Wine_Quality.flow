@@ -244,7 +244,7 @@
       ]
     },
     {
-      "node_id": "b8730572-d759-43f4-9d6d-4c88a5a819c6",
+      "node_id": "ef7afd39-c2ab-4eb0-a686-97e8db668964",
       "type": "VISUALIZATION",
       "operator": "sagemaker.visualizations.data_insights_report_0.1",
       "parameters": {

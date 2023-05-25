@@ -47,10 +47,16 @@ def _columnize(charts, cols=2):
 def visualize_tuning_job(tuning_jobs, return_dfs=False, job_metrics=None, trials_only=False, advanced=False):
     ''' tuning_job can contain a single tuning job or a list of tuning jobs. 
         Either represented by the name of the job as str or as HyperParameterTuner object.'''
-    
-    print('here?')
            
     trials_df, tuned_parameters, objective_name, is_minimize = get_job_analytics_data(tuning_jobs)
+    """
+    MODIFIED
+    """
+    trials_df.rename(columns={"validation:accuracy": "validation_accuracy"}, inplace=True)
+    objective_name = '_'.join(objective_name.split(':'))
+    """
+    MODIFIED ENDS
+    """
     display(trials_df.head(10))
     
     print(tuned_parameters)
@@ -547,7 +553,6 @@ def get_job_analytics_data(tuning_job_names):
         tuning_job_result = sm.describe_hyper_parameter_tuning_job(HyperParameterTuningJobName=tuning_job_name)
         status = tuning_job_result['HyperParameterTuningJobStatus']
         print(f'Tuning job {tuning_job_name:25s} status: {status}')
-        print("Test")
         
         df = pd.concat([df, _get_df(tuning_job_name)])
 
